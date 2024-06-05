@@ -3,23 +3,21 @@ package main
 import (
     "log"
     "net/http"
+    "os"
     "portfolio-backend/config"
     "portfolio-backend/routes"
-
-    "github.com/gorilla/mux"
 )
 
 func main() {
-    // Conectar a la base de datos
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "3000" // Puerto predeterminado si no se establece el puerto en el entorno
+    }
+
     config.ConnectDB()
 
-    // Crear un nuevo enrutador
-    r := mux.NewRouter()
+    r := routes.RegisterRoutes()
 
-    // Configurar las rutas
-    routes.RegisterRoutes(r)
-
-    // Iniciar el servidor
-    log.Println("Servidor iniciado en el puerto 8080")
-    log.Fatal(http.ListenAndServe(":8080", r))
+    log.Println("Server running on port", port)
+    log.Fatal(http.ListenAndServe(":"+port, r))
 }
