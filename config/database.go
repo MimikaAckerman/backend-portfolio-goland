@@ -3,35 +3,47 @@ package config
 import (
     "context"
     "log"
-    "time"
-
+    "os"
+    "github.com/joho/godotenv"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
     "go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-var Client *mongo.Client
+var DB *mongo.Client
 
 func ConnectDB() {
-    clientOptions := options.Client().ApplyURI("mongodb+srv://mimika:1.Cambiame@databasecluster.ldcnr5i.mongodb.net/?retryWrites=true&w=majority&appName=DatabaseCluster")
+    // Cargar el archivo .env
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatalf("Error cargando el archivo .env: %v", err)
+    }
 
+    // Obtener la URI de MongoDB desde las variables de entorno
+    mongoURI := os.Getenv("MONGO_URI")
+    if mongoURI == "" {
+        log.Fatal("MONGO_URI no está configurada en el archivo .env")
+    }
+
+    // Crear las opciones del cliente
+    clientOptions := options.Client().ApplyURI(mongoURI).SetServerAPIOptions(options.ServerAPI(options.ServerAPIVersion1))
+
+    // Conectar a MongoDB
     client, err := mongo.Connect(context.TODO(), clientOptions)
     if err != nil {
-        log.Fatal("Error conectando a MongoDB:", err)
+        log.Fatalf("Error conectando a MongoDB: %v", err)
     }
 
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
-
-    err = client.Ping(ctx, readpref.Primary())
+    // Verificar la conexión
+    err = client.Ping(context.TODO(), readpref.Primary())
     if err != nil {
-        log.Fatal("Error verificando la conexión a MongoDB:", err)
+        log.Fatalf("No se pudo conectar a la base de datos: %v", err)
     }
 
-    log.Println("Conexión a MongoDB exitosa!")
-    Client = client
+    log.Println("Conexión a la base de datos exitosa")
+    DB = client
 }
 
 func GetCollection(collectionName string) *mongo.Collection {
-    return Client.Database("portfolio").Collection(collectionName)
+    return DB.Database("portfolio").Collection(collectionName)
 }
