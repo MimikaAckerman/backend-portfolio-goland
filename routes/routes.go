@@ -1,7 +1,7 @@
 package routes
 
 import (
-    "portfolio-backend/api"
+    "portfolio-backend/Handler"
     "github.com/gorilla/mux"
 )
 
@@ -9,8 +9,8 @@ func RegisterRoutes() *mux.Router {
     r := mux.NewRouter()
 
     // Definir las rutas
-    r.HandleFunc("/formacion", api.GetFormacion).Methods("GET")
-    r.HandleFunc("/experience", api.GetExperience).Methods("GET")
+    r.HandleFunc("/formacion", Handler.GetFormacion).Methods("GET")
+    r.HandleFunc("/experience", Handler.GetExperience).Methods("GET")
 
     return r
 }
