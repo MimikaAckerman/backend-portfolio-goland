@@ -1,9 +1,11 @@
 package Handler
 
 import (
-	"fmt"
+    "github.com/gin-gonic/gin"
     "net/http"
+
 )
-func Welcome(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "¡Bienvenido a la API de mi portfolio!")
+
+func Welcome(c *gin.Context) {
+    c.String(http.StatusOK, "¡Bienvenido a la API de mi portfolio!")
 }

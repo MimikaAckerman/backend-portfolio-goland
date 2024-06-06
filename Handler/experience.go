@@ -2,27 +2,26 @@ package Handler
 
 import (
     "context"
-    "encoding/json"
     "net/http"
     "portfolio-backend/config"
+    "github.com/gin-gonic/gin"
     "go.mongodb.org/mongo-driver/bson"
 )
 
-func GetExperience(w http.ResponseWriter, r *http.Request) {
+func GetExperience(c *gin.Context) {
     collection := config.GetCollection("experience")
     cursor, err := collection.Find(context.Background(), bson.M{})
     if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
+        c.String(http.StatusInternalServerError, err.Error())
         return
     }
     defer cursor.Close(context.Background())
 
     var experience []bson.M
     if err = cursor.All(context.Background(), &experience); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
+        c.String(http.StatusInternalServerError, err.Error())
         return
     }
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(experience)
+    c.JSON(http.StatusOK, experience)
 }

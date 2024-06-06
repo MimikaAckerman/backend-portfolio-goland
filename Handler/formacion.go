@@ -2,27 +2,26 @@ package Handler
 
 import (
     "context"
-    "encoding/json"
     "net/http"
     "portfolio-backend/config"
+    "github.com/gin-gonic/gin"
     "go.mongodb.org/mongo-driver/bson"
 )
 
-func GetFormacion(w http.ResponseWriter, r *http.Request) {
+func GetFormacion(c *gin.Context) {
     collection := config.GetCollection("Formacion")
     cursor, err := collection.Find(context.Background(), bson.M{})
     if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
+        c.String(http.StatusInternalServerError, err.Error())
         return
     }
     defer cursor.Close(context.Background())
 
     var formacion []bson.M
     if err = cursor.All(context.Background(), &formacion); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
+        c.String(http.StatusInternalServerError, err.Error())
         return
     }
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(formacion)
+    c.JSON(http.StatusOK, formacion)
 }
