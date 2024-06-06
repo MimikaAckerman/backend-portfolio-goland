@@ -33,7 +33,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 func main() {
     port := os.Getenv("PORT")
     if port == "" {
-        port = "3000" // Puerto predeterminado si no se establece el puerto en el entorno
+        port = "8000" // Puerto predeterminado si no se establece el puerto en el entorno
     }
 
     log.Println("Server running on port", port)
