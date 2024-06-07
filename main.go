@@ -3,39 +3,19 @@ package main
 import (
     "log"
     "net/http"
-    "os"
     "portfolio-backend/config"
     "portfolio-backend/routes"
-    "github.com/rs/cors"
 )
 
-var (
-    handler http.Handler
-)
-
-func init() {
-    // Conectar a la base de datos
+func main() {
+    config.LoadEnvVariables()
     config.ConnectDB()
 
-    // Registrar rutas
     r := routes.RegisterRoutes()
 
-    // Configurar CORS
-    handler = cors.Default().Handler(r)
-}
+    // Obtén el puerto desde la variable de entorno PORT, si no está establecida usa el puerto 8080 por defecto.
+    PORT := config.GetPort()
 
-// Handler maneja todas las solicitudes HTTP
-func Handler(w http.ResponseWriter, r *http.Request) {
-    handler.ServeHTTP(w, r)
-}
-
-// Main se utiliza para ejecutar la aplicación localmente
-func main() {
-    port := os.Getenv("PORT")
-    if port == "" {
-        port = "4000" // Puerto predeterminado si no se establece el puerto en el entorno
-    }
-
-    log.Println("Server running on port", port)
-    log.Fatal(http.ListenAndServe(":"+port, handler))
+    log.Printf("Server running on port %s", PORT)
+    log.Fatal(http.ListenAndServe(":"+PORT, r))
 }
