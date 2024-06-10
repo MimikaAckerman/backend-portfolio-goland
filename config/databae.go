@@ -51,9 +51,9 @@ func GetCollection(collectionName string) *mongo.Collection {
 }
 
 func GetPort() string {
-    port := os.Getenv("PORT")
-    if port == "" {
+    PORT := os.Getenv("PORT")
+    if PORT == "" {
         log.Fatal("PORT is not set in .env file")
     }
-    return port
+    return PORT
 }
