@@ -1,20 +1,21 @@
 package main
 
-import (
+import(
     "log"
-    "net/http"
-    "portfolio-backend/config"
-    "portfolio-backend/routes"
+    "os"
+    "github.com/gofiber/fiber/v2"
 )
-
-func main() {
-    config.LoadEnvVariables()
-    config.ConnectDB()
-
-    r := routes.RegisterRoutes()
-
-    PORT := config.GetPort()
-
-    log.Printf("Server running on port %s", PORT)
-    log.Fatal(http.ListenAndServe(":"+PORT, r))
+func main(){
+    app:= fiber.New()
+    app.Get("/",func(c *fiber.Ctx)error{
+        return c.SendString("Hello , World!")
+    })
+    app.Get("/env",func(c *fiber.Ctx)error{
+        return c.SendString("hello ,ENV"+os.Getenv("TEST_ENV"))
+    })
+    port :=os.Getenv("PORT")
+    if port == ""{
+        port="3000"
+    }
+    log.Fatal(app.Listen("0.0.0.0:"+port))
 }
